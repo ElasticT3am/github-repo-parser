@@ -7,6 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <name>githubparser</name>
   <url>http://maven.apache.org</url>
+
   <dependencies>
       <dependency>
           <groupId>junit</groupId>
@@ -18,6 +19,11 @@
           <groupId>org.eclipse.mylyn.github</groupId>
           <artifactId>org.eclipse.egit.github.core</artifactId>
           <version>2.1.5</version>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.jgit</groupId>
+          <artifactId>org.eclipse.jgit</artifactId>
+          <version>	4.4.1.201607150455-r</version>
       </dependency>
   </dependencies>
     <build>
