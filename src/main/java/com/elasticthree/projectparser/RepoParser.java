@@ -97,9 +97,10 @@ public class RepoParser implements Iterable<List<SearchRepository>> {
 
         RepoParser repoParser;
         if (args.length == 2)
-            repoParser = new RepoParser();
-        else
             repoParser = new RepoParser(args[1], args[2]);
+        else
+            repoParser = new RepoParser();
+
 
         int pageNumber = repoParser.getPageNumber();
         System.out.println("Resuming from page: " + pageNumber);
