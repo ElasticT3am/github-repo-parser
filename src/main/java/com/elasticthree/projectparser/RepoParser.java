@@ -4,9 +4,10 @@ import org.eclipse.egit.github.core.SearchRepository;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import java.io.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 
 public class RepoParser implements Iterable<List<SearchRepository>> {
@@ -70,7 +71,10 @@ public class RepoParser implements Iterable<List<SearchRepository>> {
     }
 
     private List<SearchRepository> getNextJavaReposPage(RepositoryService service) throws IOException {
-        List<SearchRepository> repos = service.searchRepositories("language:Java", pageNumber);
+        Map<String, String> params = new HashMap<>();
+        params.put("language", "Java");
+        params.put("created", "<2016-09-01");
+        List<SearchRepository> repos = service.searchRepositories(params, this.pageNumber);
         writePageNumberToFile(++this.pageNumber);
         return repos;
     }
@@ -97,7 +101,7 @@ public class RepoParser implements Iterable<List<SearchRepository>> {
 
         RepoParser repoParser;
         if (args.length == 2)
-            repoParser = new RepoParser(args[1], args[2]);
+            repoParser = new RepoParser(args[0], args[1]);
         else
             repoParser = new RepoParser();
 
@@ -106,13 +110,19 @@ public class RepoParser implements Iterable<List<SearchRepository>> {
         System.out.println("Resuming from page: " + pageNumber);
 
         int times = 0;
+        Map<String, SearchRepository> repoMap = new HashMap<>();
         for (List<SearchRepository> repoList : repoParser) {
             for (SearchRepository repo : repoList) {
-                System.out.println("Repo name:  " + repo.getName() + " , Language: "
-                        + repo.getLanguage() + ", Url: " + repo.getUrl());
+                if (repoMap.containsKey(repo.getUrl()))
+                    System.out.println("Batman");
+                repoMap.put(repo.getUrl(), repo);
+                try {
+                    Files.write(Paths.get("/home/mike/Desktop/java_repos.txt"), (repo.getUrl() + "\n").getBytes(), StandardOpenOption.APPEND);
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            if (++times > 3)
-                return;
         }
+        System.out.println("Exiting... Pages: " + times);
     }
 }
