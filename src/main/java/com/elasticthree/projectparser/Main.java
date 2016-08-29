@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by mike on 8/28/16.
- */
+
 public class Main {
 
     public static void main(String[] args) throws IOException {

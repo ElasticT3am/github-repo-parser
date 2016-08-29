@@ -6,7 +6,7 @@ import org.eclipse.egit.github.core.service.RepositoryService;
 import java.io.*;
 import java.util.*;
 
-public class RepoParser implements Iterable<List<SearchRepository>> {
+class RepoParser implements Iterable<List<SearchRepository>> {
 
     private final RepositoryService repositoryService;
     private final String repoListFileName;
@@ -15,11 +15,11 @@ public class RepoParser implements Iterable<List<SearchRepository>> {
     private Map<String, String> params;
 
 
-    public File getReposFile() {
+    File getReposFile() {
         return reposFile;
     }
 
-    public RepoParser(String userName, String pass, Map<String, String> requestParams) throws IOException {
+    RepoParser(String userName, String pass, Map<String, String> requestParams) throws IOException {
         String year = requestParams.get("created").substring(1,5);
         File reposDir = FileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
         this.repoListFileName = "java_repos_" + requestParams.get("created").replace("\"","")
