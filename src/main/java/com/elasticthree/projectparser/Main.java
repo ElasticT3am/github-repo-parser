@@ -1,7 +1,7 @@
 package com.elasticthree.projectparser;
 
+import org.apache.commons.cli.*;
 import org.eclipse.egit.github.core.SearchRepository;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,6 +14,10 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+
+        Options options = getCommandLineOpts();
+        validateArgs(args, options);
+
 
         if (args.length < 3) {
             System.out.println("Usage: java Main <github_username> <github_pass> <year>");
@@ -50,5 +54,49 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static void validateArgs(String[] args, Options options) {
+        CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine line = parser.parse( options, args );
+
+            if( line.hasOption( "year" ) ) {
+                System.out.println( line.getOptionValue( "block-size" ) );
+            }
+            else throw new RuntimeException("Please give year");
+        }
+        catch( ParseException exp ) {
+            System.out.println(exp.getMessage());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp( "Main", options );
+            System.exit(-1);
+        }
+    }
+
+    private static Options getCommandLineOpts() {
+        Options options = new Options();
+
+        options.addOption("d", "download", false,
+                    "also downlad the repositories in zip-compressed format (Not Implemented yet)");
+        options.addOption(Option.builder().longOpt("year")
+                .hasArg()
+                .desc("parse repositories create at YEAR")
+                .argName("YEAR")
+                .required()
+                .build());
+        options.addOption(Option.builder().longOpt("username")
+                .hasArg()
+                .desc("github USERNAME")
+                .argName("USERNAME")
+                .required()
+                .build());
+        options.addOption(Option.builder().longOpt("password")
+                .hasArg()
+                .desc("github PASSWORD")
+                .argName("PASSWORD")
+                .required()
+                .build());
+        return options;
     }
 }
