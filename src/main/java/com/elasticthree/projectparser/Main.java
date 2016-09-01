@@ -18,12 +18,6 @@ public class Main {
         Options options = getCommandLineOpts();
         validateArgs(args, options);
 
-
-        if (args.length < 3) {
-            System.out.println("Usage: java Main <github_username> <github_pass> <year>");
-            System.exit(-1);
-        }
-
         int year = Integer.valueOf(args[2]);
         for (int month = 1; month <= 12; month++) {
             for (int day = 1; day <= 31; day++) {
