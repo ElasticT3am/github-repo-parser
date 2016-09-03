@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-class FileUtils {
+class ParserFileUtils {
         static File createNewDir(String dirName) {
             File reposDir = new File(dirName);
             if (!(reposDir.exists() && reposDir.isDirectory())) {

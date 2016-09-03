@@ -21,11 +21,10 @@ class RepoParser implements Iterable<List<SearchRepository>> {
 
     RepoParser(String userName, String pass, Map<String, String> requestParams) throws IOException {
         String year = requestParams.get("created").substring(1,5);
-        File reposDir = FileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
         this.repoListFileName = "java_repos_" + requestParams.get("created").replace("\"","")
                 .replace(" ","").replace(":","-");
-        reposFile = new File(reposDir, this.repoListFileName);
-        FileUtils.createNewFile(reposFile);
+        reposFile = new File(System.getProperty("user.home") + "/.repoparser/" + year + "/", this.repoListFileName);
+        ParserFileUtils.createNewFile(reposFile);
         this.pageNumber = 0;
         this.params = requestParams;
         this.repositoryService = newRepositoryService(userName, pass);
