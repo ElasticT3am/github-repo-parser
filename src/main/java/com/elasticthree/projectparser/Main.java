@@ -5,6 +5,8 @@ import com.elasticthree.ASTCreator.ASTCreator.Helpers.RecursivelyProjectJavaFile
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.egit.github.core.SearchRepository;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +23,10 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    public static void main(String[] args) {
+    final static Logger logger = Logger.getLogger(Main.class);
 
+    public static void main(String[] args) {
+        PropertyConfigurator.configure("resources/log4j.properties");
         Options options = ParserCommandLineUtils.getCommandLineOpts();
         CommandLine line = ParserCommandLineUtils.validateArgs(args, options);
         String userName = line.getOptionValue("username");
@@ -57,7 +61,7 @@ public class Main {
                                     .getProjectJavaFiles(repositoryDir.getAbsolutePath());
                             ASTCreator ast = new ASTCreator();
                             classes.forEach(file -> {
-                                System.out.println("##################### Java File #####################");
+                              logger.info("##################### Java File: " + file + " #####################" );
                                 ast.getASTStats(file);
                             });
                             //analyze and upload to neo4j
