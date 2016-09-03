@@ -1,5 +1,7 @@
 package com.elasticthree.projectparser;
 
+import com.elasticthree.ASTCreator.ASTCreator.ASTCreator;
+import com.elasticthree.ASTCreator.ASTCreator.Helpers.RecursivelyProjectJavaFiles;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.egit.github.core.SearchRepository;
@@ -27,7 +29,7 @@ public class Main {
         String pass = line.getOptionValue("password");
         int year = Integer.valueOf(line.getOptionValue("year"));
         File reposDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
-        ExecutorService executorService = Executors.newFixedThreadPool(8);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
 
         for (String dateRange : new ParserDateUtils(year)) {
             executorService.execute(() -> {
@@ -51,6 +53,13 @@ public class Main {
                             File zipFile = new File(reposDir, repoZipUrl.replace("https://", "").replace("/", "_"));
                             FileUtils.copyURLToFile(new URL(repoZipUrl), zipFile);
                             File repositoryDir = ParserFileUtils.unzipFile(zipFile.getAbsolutePath());
+                            List<String> classes = RecursivelyProjectJavaFiles
+                                    .getProjectJavaFiles(repositoryDir.getAbsolutePath());
+                            ASTCreator ast = new ASTCreator();
+                            classes.forEach(file -> {
+                                System.out.println("##################### Java File #####################");
+                                ast.getASTStats(file);
+                            });
                             //analyze and upload to neo4j
                         } catch (IOException e) {
                             e.printStackTrace();
