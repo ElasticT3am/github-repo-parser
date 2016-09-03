@@ -1,7 +1,11 @@
 package com.elasticthree.projectparser;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+
 import java.io.File;
 import java.io.IOException;
+
 
 
 class ParserFileUtils {
@@ -25,4 +29,15 @@ class ParserFileUtils {
             return file;
         }
 
+        static File unzipFile(String source) {
+            File dest = null;
+            try {
+                ZipFile zip = new ZipFile(source);
+                dest = createNewDir(source.replace(".zip", ""));
+                zip.extractAll(dest.getAbsolutePath());
+            } catch (ZipException e) {
+                e.printStackTrace();
+            }
+            return dest;
+        }
 }
