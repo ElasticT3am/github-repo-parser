@@ -16,9 +16,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Options options = getCommandLineOpts();
-        validateArgs(args, options);
+        CommandLine line = validateArgs(args, options);
+        String userName = line.getOptionValue("username");
+        String pass = line.getOptionValue("password");
+        int year = Integer.valueOf(line.getOptionValue("year"));
 
-        int year = Integer.valueOf(args[2]);
         for (int month = 1; month <= 12; month++) {
             for (int day = 1; day <= 31; day++) {
                 for (int hour = 0; hour < 24; hour += 8) {
@@ -26,8 +28,8 @@ public class Main {
 
                     Map<String, String> requestParams = new HashMap<>();
                     requestParams.put("language", "Java");
-                    requestParams.put("created", dateRange.toString());
-                    RepoParser repoParser = new RepoParser(args[0], args[1], requestParams);
+                    requestParams.put("created", dateRange);
+                    RepoParser repoParser = new RepoParser(userName, pass, requestParams);
 
                     Map<String, SearchRepository> repoMap = new HashMap<>();
                     for (List<SearchRepository> repoList : repoParser) {
@@ -36,7 +38,7 @@ public class Main {
                                 System.out.println("Batman: This repo already exists.. Refusing to re-add it");
                                 continue;
                             }
-                            String repoZipUrl = repo.getUrl() + "/archive/master.zip";
+                            String repoZipUrl = repoParser.getRepoZipUrl(repo);
                             repoMap.put(repo.getUrl(), repo);
                             try {
                                 Files.write(Paths.get(repoParser.getReposFile().toString()), (repoZipUrl + "\n").getBytes(), StandardOpenOption.APPEND);
@@ -50,10 +52,12 @@ public class Main {
         }
     }
 
-    private static void validateArgs(String[] args, Options options) {
+    private static CommandLine validateArgs(String[] args, Options options) {
+
+        CommandLine line = null;
         CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine line = parser.parse( options, args );
+            line = parser.parse( options, args );
 
             if( line.hasOption( "year" ) ) {
                 System.out.println( line.getOptionValue( "block-size" ) );
@@ -66,6 +70,7 @@ public class Main {
             formatter.printHelp( "Main", options );
             System.exit(-1);
         }
+        return line;
     }
 
     private static Options getCommandLineOpts() {

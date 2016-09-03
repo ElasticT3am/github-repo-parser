@@ -45,16 +45,24 @@ class RepoParser implements Iterable<List<SearchRepository>> {
         return repos;
     }
 
+    public String getRepoZipUrl(SearchRepository repository) {
+
+        return repository == null ? null : repository.getUrl() + "/archive/master.zip";
+    }
+
     public Iterator<List<SearchRepository>> iterator() {
         return new Iterator<List<SearchRepository>>() {
 
+            List<SearchRepository> currentList;
+
             public boolean hasNext() {
-                return pageNumber < 10;
+                return (pageNumber == 0) || ((pageNumber < 10) && (currentList.size() == 100));
             }
 
             public List<SearchRepository> next() {
                 try {
-                    return getNextJavaReposPage(repositoryService);
+                    currentList = getNextJavaReposPage(repositoryService);
+                    return currentList;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
