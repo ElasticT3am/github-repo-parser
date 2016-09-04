@@ -2,6 +2,7 @@ package com.elasticthree.projectparser;
 
 import com.elasticthree.ASTCreator.ASTCreator.ASTCreator;
 import com.elasticthree.ASTCreator.ASTCreator.Helpers.RecursivelyProjectJavaFiles;
+import com.elasticthree.ASTCreator.ASTCreator.Neo4jDriver.Neo4JDriver;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.egit.github.core.SearchRepository;
@@ -33,10 +34,11 @@ public class Main {
         String pass = line.getOptionValue("password");
         int year = Integer.valueOf(line.getOptionValue("year"));
         File reposDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         for (String dateRange : new ParserDateUtils(year)) {
             executorService.execute(() -> {
+                Neo4JDriver neo4j = new Neo4JDriver();
                 Map<String, String> requestParams = new HashMap<>();
                 requestParams.put("language", "Java");
                 requestParams.put("created", dateRange);
@@ -61,10 +63,8 @@ public class Main {
                                     .getProjectJavaFiles(repositoryDir.getAbsolutePath());
                             ASTCreator ast = new ASTCreator();
                             classes.forEach(file -> {
-                              logger.info("##################### Java File: " + file + " #####################" );
-                                ast.getASTStats(file);
+                                neo4j.insertNeo4JDB(ast.getASTStats(file));
                             });
-                            //analyze and upload to neo4j
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
