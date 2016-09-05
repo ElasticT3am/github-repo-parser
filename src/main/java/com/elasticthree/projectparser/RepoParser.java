@@ -6,7 +6,7 @@ import org.eclipse.egit.github.core.service.RepositoryService;
 import java.io.*;
 import java.util.*;
 
-class RepoParser implements Iterable<List<SearchRepository>> {
+class RepoParser implements Iterable<SearchRepository> {
 
     private final RepositoryService repositoryService;
     private final String repoListFileName;
@@ -39,35 +39,41 @@ class RepoParser implements Iterable<List<SearchRepository>> {
         return client.setCredentials(userName, pass);
     }
 
-    private List<SearchRepository> getNextJavaReposPage(RepositoryService service) throws IOException {
-        List<SearchRepository> repos = service.searchRepositories(params, this.pageNumber++);
+    private List<SearchRepository> getNextResultsPage() throws IOException {
+        List<SearchRepository> repos = repositoryService.searchRepositories(params, this.pageNumber++);
         return repos;
     }
 
-    public String getRepoZipUrl(SearchRepository repository) {
+    String getRepoZipUrl(SearchRepository repository) {
 
         return repository == null ? null : repository.getUrl() + "/archive/master.zip";
     }
 
-    public Iterator<List<SearchRepository>> iterator() {
-        return new Iterator<List<SearchRepository>>() {
+    public Iterator<SearchRepository> iterator() {
+        try {
+            return new Iterator<SearchRepository>() {
 
-            List<SearchRepository> currentList;
+                Iterator<SearchRepository> currentPage = getNextResultsPage().iterator();
 
-            public boolean hasNext() {
-                return (pageNumber == 0) || ((pageNumber < 10) && (currentList.size() == 100));
-            }
-
-            public List<SearchRepository> next() {
-                try {
-                    currentList = getNextJavaReposPage(repositoryService);
-                    return currentList;
-                } catch (IOException e) {
-                    e.printStackTrace();
+                public boolean hasNext() {
+                    return currentPage.hasNext();
                 }
-                return null;
-            }
-            public void remove() {}
-        };
+
+                public SearchRepository next() {
+                    SearchRepository repo = currentPage.next();
+                    if (!currentPage.hasNext())
+                        try {
+                            currentPage = getNextResultsPage().iterator();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    return repo;
+                }
+                public void remove() {}
+            };
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cannot fetch any more repositories from github.");
+        }
     }
 }

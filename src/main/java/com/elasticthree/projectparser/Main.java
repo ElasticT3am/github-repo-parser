@@ -34,7 +34,7 @@ public class Main {
         String pass = line.getOptionValue("password");
         int year = Integer.valueOf(line.getOptionValue("year"));
         File reposDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        ExecutorService executorService = Executors.newFixedThreadPool(8);
 
         for (String dateRange : new ParserDateUtils(year)) {
             executorService.execute(() -> {
@@ -50,9 +50,7 @@ public class Main {
                 }
 
                 assert repoParser != null;
-                for (List<SearchRepository> repoList : repoParser) {
-                    assert repoList != null;
-                    for (SearchRepository repo : repoList) {
+                    for (SearchRepository repo : repoParser) {
                         String repoZipUrl = repoParser.getRepoZipUrl(repo);
                         try {
                             Files.write(Paths.get(repoParser.getReposFile().toString()), (repoZipUrl + "\n").getBytes(), StandardOpenOption.APPEND);
@@ -69,11 +67,8 @@ public class Main {
                             e.printStackTrace();
                         }
                     }
-                }
             });
 
         }
     }
-
-
 }
