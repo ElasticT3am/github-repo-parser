@@ -49,7 +49,10 @@ class RemoteRepoParser implements IRepoParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ParserFileUtils.unzipFile(zipFile.getAbsolutePath());
+        File repoDir = ParserFileUtils.unzipFile(zipFile.getAbsolutePath());
+        if (!zipFile.delete())
+            System.out.println("Could not delete zip file: " + zipFile);
+        return repoDir;
     }
 
     private RepositoryService newRepositoryService(String userName, String pass) {
