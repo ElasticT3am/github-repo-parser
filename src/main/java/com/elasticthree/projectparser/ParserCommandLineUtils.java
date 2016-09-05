@@ -28,14 +28,6 @@ public class ParserCommandLineUtils {
     static Options getCommandLineOpts() {
         Options options = new Options();
 
-        options.addOption("d", "download", false,
-                "also downlad the repositories in zip-compressed format");
-        options.addOption(Option.builder().longOpt("year")
-                .hasArg()
-                .desc("parse repositories create at YEAR")
-                .argName("YEAR")
-                .required()
-                .build());
         options.addOption(Option.builder().longOpt("username")
                 .hasArg()
                 .desc("github USERNAME")
@@ -47,6 +39,17 @@ public class ParserCommandLineUtils {
                 .desc("github PASSWORD")
                 .argName("PASSWORD")
                 .required()
+                .build());
+        options.addOption(Option.builder().longOpt("year")
+                .hasArg()
+                .desc("parse repositories create at YEAR")
+                .argName("YEAR")
+                .required()
+                .build());
+        options.addOption("d", "download", false,
+                "also downlad the repositories in zip-compressed format");
+        options.addOption(Option.builder().longOpt("upload")
+                .desc("Whether to upload to a neo4j server or not")
                 .build());
         options.addOption(Option.builder().longOpt("threads")
                 .hasArg()

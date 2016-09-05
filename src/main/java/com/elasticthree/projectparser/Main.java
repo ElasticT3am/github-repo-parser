@@ -27,13 +27,16 @@ public class Main {
         String userName = line.getOptionValue("username");
         String pass = line.getOptionValue("password");
         int year = Integer.valueOf(line.getOptionValue("year"));
+        boolean isDownload = line.hasOption("download");
+        boolean isUpload = line.hasOption("upload");
+
         File repoDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
         ExecutorService executorService = Executors.newFixedThreadPool(Integer.valueOf(line.getOptionValue("threads", "1")));
 
         for (String dateRange : new ParserDateUtils(year)) {
             executorService.execute(() -> {
                 IRepoParser repoParser = null;
-                if (line.hasOption("download")) {
+                if (isDownload) {
                     Map<String, String> requestParams = RemoteRepoParser.createApiRequest(dateRange);
                     try {
                         repoParser = new RemoteRepoParser(userName, pass, requestParams);
@@ -41,12 +44,13 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
-                else
+                else {
                     try {
                         repoParser = new LocalRepoParser(dateRange, repoDir);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
 
                 assert repoParser != null;
                 for (Repository repo : repoParser) {
@@ -55,11 +59,13 @@ public class Main {
                     File repositoryDir = repoParser.fetchRepo(repo);
                     if (repositoryDir == null)
                         continue;
-                    List<String> classes = RecursivelyProjectJavaFiles
-                            .getProjectJavaFiles(repositoryDir.getAbsolutePath());
-                    Neo4JDriver neo4j = new Neo4JDriver();
-                    ASTCreator ast = new ASTCreator();
-                    classes.forEach(file -> neo4j.insertNeo4JDB(ast.getASTStats(file)));
+                    if (isUpload) {
+                        List<String> classes = RecursivelyProjectJavaFiles
+                                .getProjectJavaFiles(repositoryDir.getAbsolutePath());
+                        Neo4JDriver neo4j = new Neo4JDriver();
+                        ASTCreator ast = new ASTCreator();
+                        classes.forEach(file -> neo4j.insertNeo4JDB(ast.getASTStats(file)));
+                    }
                 }
             });
         }
