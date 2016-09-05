@@ -7,12 +7,12 @@ public class Repository {
     private final String url;
     private final String repoZipUrl;
     private final String repoDirectory;
-    private int size;
+    private int size = -1;
 
     public Repository(String url) {
-        this.url = url;
-        this.repoZipUrl = url + "/archive/master.zip";
-        this.repoDirectory = url.replace("https://", "").replace("/", "_").replace(".zip", "");
+        this.url = url.replace("/archive/master.zip", "");
+        this.repoZipUrl = url;
+        this.repoDirectory =  url.replace(".zip", "").replace("https://", "").replace("/", "_");
     }
 
     Repository setSize(int size) {
