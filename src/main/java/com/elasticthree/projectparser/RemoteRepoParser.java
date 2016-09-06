@@ -41,13 +41,13 @@ class RemoteRepoParser implements IRepoParser {
 
     @Override
     public File fetchRepo(Repository repo) {
-        File zipFile = null;
+        File zipFile;
         try {
             zipFile = new File(repositoryDir, repo.getZipUrl().replace("https://", "").replace("/", "_"));
             FileUtils.copyURLToFile(new URL(repo.getZipUrl()), zipFile);
             Files.write(Paths.get(repositoryDir.getAbsolutePath(), repoListFileName), (repo.getUrl() + "\n").getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            e.printStackTrace();
+            //This repo's master branch is not master. Fuck off!
             return null;
         }
         File repoDir = ParserFileUtils.unzipFile(zipFile.getAbsolutePath());
