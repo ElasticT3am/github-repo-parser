@@ -48,6 +48,7 @@ class RemoteRepoParser implements IRepoParser {
             Files.write(Paths.get(repoListFileName), (repo.getUrl() + "\n").getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         File repoDir = ParserFileUtils.unzipFile(zipFile.getAbsolutePath());
         if (!zipFile.delete())
