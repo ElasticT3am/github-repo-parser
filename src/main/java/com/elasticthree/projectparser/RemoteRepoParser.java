@@ -45,7 +45,7 @@ class RemoteRepoParser implements IRepoParser {
         try {
             zipFile = new File(repositoryDir, repo.getZipUrl().replace("https://", "").replace("/", "_"));
             FileUtils.copyURLToFile(new URL(repo.getZipUrl()), zipFile);
-            Files.write(Paths.get(repoListFileName), (repo.getUrl() + "\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(repositoryDir.getAbsolutePath(), repoListFileName), (repo.getUrl() + "\n").getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

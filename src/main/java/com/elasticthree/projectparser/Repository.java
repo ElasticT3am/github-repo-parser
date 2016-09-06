@@ -10,8 +10,8 @@ public class Repository {
     private int size = -1;
 
     public Repository(String url) {
-        this.url = url.replace("/archive/master.zip", "");
-        this.repoZipUrl = url;
+        this.url = url;
+        this.repoZipUrl = this.url + ("/archive/master.zip");
         this.repoDirectory =  url.replace(".zip", "").replace("https://", "").replace("/", "_");
     }
 
