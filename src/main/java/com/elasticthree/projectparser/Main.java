@@ -28,6 +28,7 @@ public class Main {
         String pass = line.getOptionValue("password");
         int year = Integer.valueOf(line.getOptionValue("year"));
         boolean isDownload = line.hasOption("download");
+        boolean noKeepFiles = line.hasOption("no-keep-files");
         boolean isUpload = line.hasOption("upload");
 
         File repoDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
@@ -65,6 +66,8 @@ public class Main {
                         Neo4JDriver neo4j = new Neo4JDriver();
                         ASTCreator ast = new ASTCreator();
                         classes.forEach(file -> neo4j.insertNeo4JDB(ast.getASTStats(file)));
+                        if (noKeepFiles)
+                            ParserFileUtils.deleteDirectory(repositoryDir);
                     }
                 }
             });

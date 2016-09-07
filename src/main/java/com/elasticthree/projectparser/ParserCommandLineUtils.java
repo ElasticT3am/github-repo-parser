@@ -56,6 +56,8 @@ public class ParserCommandLineUtils {
                 .desc("Number of threads to be used")
                 .argName("THREADS")
                 .build());
+        options.addOption("n", "no-keep-files", false,
+                "delete the repo directory after downloading-processing");
         return options;
     }
 }
