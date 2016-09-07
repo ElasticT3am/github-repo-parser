@@ -27,7 +27,7 @@ class RemoteRepoParser implements IRepoParser {
                 .replace(" ","").replace(":","-");
         reposFile = new File(System.getProperty("user.home") + "/.repoparser/" + year + "/", this.repoListFileName);
         ParserFileUtils.createNewFile(reposFile);
-        this.pageNumber = 0;
+        this.pageNumber = 1;
         this.params = requestParams;
         this.repositoryService = newRepositoryService(userName, pass);
         repositoryDir = new File(System.getProperty("user.home") + "/.repoparser/" + year);
@@ -77,6 +77,12 @@ class RemoteRepoParser implements IRepoParser {
 
                 Iterator<SearchRepository> currentPage = getNextResultsPage().iterator();
                 public boolean hasNext() {
+                    if (currentPage == null)
+                        try {
+                            currentPage = getNextResultsPage().iterator();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     return currentPage.hasNext();
                 }
 
