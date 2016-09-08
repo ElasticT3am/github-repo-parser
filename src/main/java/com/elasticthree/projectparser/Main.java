@@ -2,12 +2,10 @@ package com.elasticthree.projectparser;
 
 import com.elasticthree.ASTCreator.ASTCreator.ASTCreator;
 import com.elasticthree.ASTCreator.ASTCreator.Helpers.RecursivelyProjectJavaFiles;
-import com.elasticthree.ASTCreator.ASTCreator.Neo4jDriver.Neo4JDriver;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -44,8 +42,7 @@ public class Main {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                else {
+                } else {
                     try {
                         repoParser = new LocalRepoParser(dateRange, repoDir);
                     } catch (IOException e) {
@@ -61,15 +58,25 @@ public class Main {
                     if (repositoryDir == null)
                         continue;
                     if (isUpload) {
-                        List<String> classes = RecursivelyProjectJavaFiles
-                                .getProjectJavaFiles(repositoryDir.getAbsolutePath());
-                        ASTCreator ast = new ASTCreator(repo.getUrl());
-                        ast.repoASTProcedure(classes);
-                        if (noKeepFiles)
-                            ParserFileUtils.deleteDirectory(repositoryDir);
+                        try {
+                            List<String> classes = RecursivelyProjectJavaFiles
+                                    .getProjectJavaFiles(repositoryDir.getAbsolutePath());
+                            ASTCreator ast = new ASTCreator(repo.getUrl());
+                            ast.repoASTProcedure(classes);
+                        }
+                        catch (Exception e) {
+                            System.out.println("Batman, the repo: " + repo.getUrl() + "Could not be uploaded" +
+                                    " because the exception: << " + e.getMessage() + " >> was thrown. Deleting the repo" +
+                                    "directory: " + repositoryDir);
+                        }
+                        finally {
+                            if (noKeepFiles)
+                                ParserFileUtils.deleteDirectory(repositoryDir);
+                        }
                     }
                 }
             });
         }
+        executorService.shutdown();
     }
 }
