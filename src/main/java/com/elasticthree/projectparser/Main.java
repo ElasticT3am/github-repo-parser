@@ -63,9 +63,8 @@ public class Main {
                     if (isUpload) {
                         List<String> classes = RecursivelyProjectJavaFiles
                                 .getProjectJavaFiles(repositoryDir.getAbsolutePath());
-                        Neo4JDriver neo4j = new Neo4JDriver();
-                        ASTCreator ast = new ASTCreator();
-                        classes.forEach(file -> neo4j.insertNeo4JDB(ast.getASTStats(file)));
+                        ASTCreator ast = new ASTCreator(repo.getUrl());
+                        ast.repoASTProcedure(classes);
                         if (noKeepFiles)
                             ParserFileUtils.deleteDirectory(repositoryDir);
                     }
