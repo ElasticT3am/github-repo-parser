@@ -65,6 +65,8 @@ public class Main {
                             ast.repoASTProcedure(classes);
                         }
                         catch (Exception e) {
+                            System.out.println("\n\n <<<<<< Batman: Repo could not be uploaded >>>>>>>");
+                            e.printStackTrace();
                             System.out.println("Batman, the repo: " + repo.getUrl() + "Could not be uploaded" +
                                     " because the exception: << " + e.getMessage() + " >> was thrown. Deleting the repo" +
                                     "directory: " + repositoryDir);
