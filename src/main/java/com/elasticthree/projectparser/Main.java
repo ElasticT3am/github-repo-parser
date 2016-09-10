@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -57,12 +58,12 @@ public class Main {
                     File repositoryDir = repoParser.fetchRepo(repo);
                     if (repositoryDir == null)
                         continue;
+                    List<String> classes = RecursivelyProjectJavaFiles
+                            .getProjectJavaFiles(repositoryDir.getAbsolutePath());
                     if (isUpload) {
                         try {
-                            List<String> classes = RecursivelyProjectJavaFiles
-                                    .getProjectJavaFiles(repositoryDir.getAbsolutePath());
                             ASTCreator ast = new ASTCreator(repo.getUrl());
-                            ast.repoASTProcedure(classes);
+                            ast.repoASTProcedure(Collections.emptyList());
                         }
                         catch (Exception e) {
                             System.out.println("\n\n <<<<<< Batman: Repo could not be uploaded >>>>>>>");
