@@ -4,10 +4,12 @@ import com.elasticthree.ASTCreator.ASTCreator.ASTCreator;
 import com.elasticthree.ASTCreator.ASTCreator.Helpers.RecursivelyProjectJavaFiles;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -28,11 +30,15 @@ public class Main {
         boolean isDownload = line.hasOption("download");
         boolean noKeepFiles = line.hasOption("no-keep-files");
         boolean isUpload = line.hasOption("upload");
+        int fromMonth = line.hasOption("from-month") ? Integer.valueOf(line.getOptionValue("from-month")) : 1;
+        int toMonth = line.hasOption("to-month") ? Integer.valueOf(line.getOptionValue("to-month")) : 12;
+        ParserDateUtils dateRanges = new ParserDateUtils(year, fromMonth, toMonth);
+
 
         File repoDir = ParserFileUtils.createNewDir(System.getProperty("user.home") + "/.repoparser/" + year);
         ExecutorService executorService = Executors.newFixedThreadPool(Integer.valueOf(line.getOptionValue("threads", "1")));
 
-        for (String dateRange : new ParserDateUtils(year)) {
+        for (String dateRange : dateRanges) {
             executorService.execute(() -> {
                 IRepoParser repoParser = null;
                 if (isDownload) {

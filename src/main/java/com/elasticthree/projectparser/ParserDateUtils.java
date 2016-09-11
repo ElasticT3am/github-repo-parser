@@ -5,16 +5,23 @@ import java.util.Iterator;
 
 class ParserDateUtils implements  Iterable<String> {
 
-    int year;
-    int month = 1;
-    int day = 1;
-    int hour = 0;
+    private int year;
+    private int month;
+    private int untilMonth;
+    private int day;
+    private int hour;
 
-    public ParserDateUtils(int year) {
+    ParserDateUtils(int year, int month, int untilMonth) {
         this.year = year;
+        this.month = month;
+        this.untilMonth = untilMonth;
+        this.day = 1;
+        this.hour = 0;
     }
 
-    String getNext8HourRange() {
+
+
+    private String getNext8HourRange() {
         StringBuilder dateRange = new StringBuilder();
         dateRange.append("\"").append(year).append("-").append(String.format("%02d", month)).append("-")
                 .append(String.format("%02d", day)).append("T").append(String.format("%02d", hour))
@@ -29,7 +36,7 @@ class ParserDateUtils implements  Iterable<String> {
         return new Iterator<String>() {
             @Override
             public boolean hasNext() {
-                return (month < 13);
+                return (month <= untilMonth);
             }
 
             @Override

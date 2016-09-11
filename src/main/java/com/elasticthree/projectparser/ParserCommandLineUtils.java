@@ -5,7 +5,7 @@ import org.apache.commons.cli.*;
 /**
  * Created by mmilonakis on 9/3/16.
  */
-public class ParserCommandLineUtils {
+class ParserCommandLineUtils {
     static CommandLine validateArgs(String[] args, Options options) {
 
         CommandLine line = null;
@@ -13,9 +13,6 @@ public class ParserCommandLineUtils {
         try {
             line = parser.parse(options, args);
 
-            if (line.hasOption("year")) {
-                System.out.println(line.getOptionValue("block-size"));
-            } else throw new RuntimeException("Please give year");
         } catch (ParseException exp) {
             System.out.println(exp.getMessage());
             HelpFormatter formatter = new HelpFormatter();
@@ -45,6 +42,16 @@ public class ParserCommandLineUtils {
                 .desc("parse repositories create at YEAR")
                 .argName("YEAR")
                 .required()
+                .build());
+        options.addOption(Option.builder().longOpt("from-month")
+                .hasArg()
+                .desc("start parsing from month MONTH")
+                .argName("MONTH")
+                .build());
+        options.addOption(Option.builder().longOpt("to-month")
+                .hasArg()
+                .desc("start parsing until month MONTH")
+                .argName("MONTH")
                 .build());
         options.addOption("d", "download", false,
                 "also downlad the repositories in zip-compressed format");
